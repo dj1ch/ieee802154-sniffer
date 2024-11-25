@@ -1,10 +1,24 @@
-/* Basic console example (esp_console_repl API)
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
+/*
+ * ieee802154-sniffer: and yet another proof of concept sniffer using the IEEE 802.15.4 protocol
+ * Copyright (C) 2024 dj1ch
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+ * SOFTWARE.
 */
 
 #include <stdio.h>
@@ -55,37 +69,53 @@ static int channel = 11;
 /**
  * Basic sniffing callback
  */
-static void ieee802154_rx_cb(const uint8_t *frame, uint8_t len) {
-    printf("Packet length: %d\n", len);
-    for (int i = 0; i < len; i++) {
-        printf("%02x ", frame[i]);
+void esp_ieee802154_receive_done(uint8_t* frame, esp_ieee802154_frame_info_t* frame_info) {
+    ESP_LOGI(TAG, "Received frame: %d bytes\n", frame[0]);
+
+    if (frame[1] & 0x40) {
+        ESP_LOGI(TAG, "Source MAC: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
+                   frame[3], frame[4], frame[5], frame[6], frame[7], frame[8], frame[9], frame[10]);
     }
-    printf("\n");
+
+    for (int i = 0; i < frame[0]; i++) {
+        ESP_LOGI(TAG, "%02x ", frame[i]);
+    }
+    ESP_LOGI(TAG, "\n");
+}
+
+
+static int get_state(void) {
+    return esp_ieee802154_get_state();
 }
 
 /**
  * Registers everything needed to start the sniffer
  */
 static void register_sniffer(void) {
-    esp_ieee802154_enable();
-    esp_ieee802154_set_promiscuous(true);
-
-    register_sniffer_commands();
+    ESP_ERROR_CHECK(esp_ieee802154_enable());
+    ESP_ERROR_CHECK(esp_ieee802154_set_promiscuous(true));
+    ESP_ERROR_CHECK(esp_ieee802154_set_rx_when_idle(true));
+    ESP_ERROR_CHECK(esp_ieee802154_set_channel(channel));
 }
 
 /**
  * Stops the sniffing callback
  */
 static void stop_sniffer(void) {
-    esp_ieee802154_set_receive_callback(NULL);
+    esp_ieee802154_state_t state = get_state();
+
+    if (state != ESP_IEEE802154_RADIO_SLEEP) {
+        ESP_ERROR_CHECK(esp_ieee802154_sleep());
+    } else {
+        ESP_LOGE(TAG, "Cannot stop as device is already in sleep mode");
+    }
 }
 
 /**
- * Starts sniffing callback using ieee802154_rx_cb()
+ * Starts sniffing callback using esp_ieee802154_receive
  */
 static void start_sniffer(void) {
-    esp_ieee802154_set_receive_callback(ieee802154_rx_cb);
-    esp_ieee802154_set_channel(channel);
+    ESP_ERROR_CHECK(esp_ieee802154_receive());
 }
 
 /**
@@ -199,6 +229,7 @@ void app_main(void)
     register_system();
     register_nvs();
     register_sniffer();
+    register_sniffer_commands();
 
 #if defined(CONFIG_ESP_CONSOLE_UART_DEFAULT) || defined(CONFIG_ESP_CONSOLE_UART_CUSTOM)
     esp_console_dev_uart_config_t hw_config = ESP_CONSOLE_DEV_UART_CONFIG_DEFAULT();
