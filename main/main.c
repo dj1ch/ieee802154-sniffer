@@ -224,6 +224,7 @@ static void register_sniffer_commands(void) {
 
     esp_console_cmd_register(&start_sniffer_cmd);
     esp_console_cmd_register(&stop_sniffer_cmd);
+    esp_console_cmd_register(&current_channel_cmd);
     esp_console_cmd_register(&set_channel_cmd);
 }
 
