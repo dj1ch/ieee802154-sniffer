@@ -62,6 +62,13 @@ static void initialize_filesystem(void)
 #endif // CONFIG_STORE_HISTORY
 
 /**
+ * Define addresses which may be necessary
+ */
+static uint8_t long_addr[8] = {0x48, 0x41, 0x4E, 0x41, 0x4B, 0x4F, 0x48, 0x4F};
+static uint16_t short_addr = 0x0602;
+static uint16_t pan_id = 0x0707;
+
+/**
  * Set channel for the sniffer to use
  */
 static int channel = 11;
@@ -83,7 +90,9 @@ void esp_ieee802154_receive_done(uint8_t* frame, esp_ieee802154_frame_info_t* fr
     ESP_LOGI(TAG, "\n");
 }
 
-
+/**
+ * Return the state of the IEEE 802.15.4 driver/radio
+ */
 static int get_state(void) {
     return esp_ieee802154_get_state();
 }
@@ -95,6 +104,9 @@ static void register_sniffer(void) {
     ESP_ERROR_CHECK(esp_ieee802154_enable());
     ESP_ERROR_CHECK(esp_ieee802154_set_promiscuous(true));
     ESP_ERROR_CHECK(esp_ieee802154_set_rx_when_idle(true));
+    ESP_ERROR_CHECK(esp_ieee802154_set_panid(pan_id));
+    ESP_ERROR_CHECK(esp_ieee802154_set_short_address(short_addr));
+    ESP_ERROR_CHECK(esp_ieee802154_set_extended_address(long_addr));
     ESP_ERROR_CHECK(esp_ieee802154_set_channel(channel));
 }
 
