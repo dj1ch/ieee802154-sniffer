@@ -151,7 +151,7 @@ static void set_channel(int c) {
  */
 static int cmd_start_sniffer(int argc, char **argv) {
     start_sniffer();
-    printf("Sniffer started\n");
+    printf("Sniffer started on channel %d\n", channel);
     return 0;
 }
 
@@ -186,7 +186,6 @@ static int cmd_set_channel(int argc, char **argv) {
         return 1;
     }
     set_channel(channel);
-    printf("Channel now set to %d\n", channel);
     return 0;
 }
 
