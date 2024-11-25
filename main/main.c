@@ -1,5 +1,5 @@
 /*
- * ieee802154-sniffer: and yet another proof of concept sniffer using the IEEE 802.15.4 protocol
+ * ieee802154-sniffer: and yet another proof of concept sniffer using the IEEE 802.15.4 standard
  * Copyright (C) 2024 dj1ch
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
