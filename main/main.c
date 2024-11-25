@@ -131,12 +131,19 @@ static void start_sniffer(void) {
 }
 
 /**
+ * Gets the current channel
+ */
+static void current_channel(void) {
+    printf("Current channel: %d", channel);
+}
+
+/**
  * Sets channel for sniffing.
  * However, you must reload the sniffer in order to use this channel.
  */
 static void set_channel(int c) {
     channel = c;
-    printf("Set channel to %d", channel);
+    printf("Set channel to %d\n", channel);
 }
 
 /**
@@ -158,6 +165,14 @@ static int cmd_stop_sniffer(int argc, char **argv) {
 }
 
 /**
+ * Command to return the current channel
+ */
+static int cmd_current_channel(int argc, char **argv) {
+    current_channel();
+    return 0;
+}
+
+/**
  * Command to set the channel
  */
 static int cmd_set_channel(int argc, char **argv) {
@@ -171,7 +186,7 @@ static int cmd_set_channel(int argc, char **argv) {
         return 1;
     }
     set_channel(channel);
-    printf("Channel set to %d\n", channel);
+    printf("Channel now set to %d\n", channel);
     return 0;
 }
 
@@ -191,6 +206,13 @@ static void register_sniffer_commands(void) {
         .help = "Stop the IEEE 802.15.4 sniffer",
         .hint = NULL,
         .func = &cmd_stop_sniffer,
+    };
+
+    const esp_console_cmd_t current_channel_cmd = {
+        .command = "current_channel",
+        .help = "Returns the current channel",
+        .hint = NULL,
+        .func = &cmd_current_channel,
     };
 
     const esp_console_cmd_t set_channel_cmd = {
