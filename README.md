@@ -20,7 +20,7 @@
     <a href="https://github.com/dj1ch/ieee802154-sniffer"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/dj1ch/ieee802154-sniffer">View Demo(TBA)</a>
+    <a href="https://youtu.be/IUDlnhKO-Yo">View Demo</a>
     ·
     <a href="https://github.com/dj1ch/ieee802154-sniffer/issues">Report Bug</a>
     ·
@@ -115,9 +115,7 @@ Sniffer command list:
 <!-- ROADMAP -->
 ## Roadmap
 
-As of now I would like to implement/am in the progress of implementing:
-
-* Video demo
+As of now there isn't anything else to implement.
 
 See the [open issues](https://github.com/dj1ch/ieee802154-sniffer/issues) for a list of proposed features (and known issues).
 
