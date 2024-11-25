@@ -134,7 +134,7 @@ static void start_sniffer(void) {
  * Gets the current channel
  */
 static void current_channel(void) {
-    printf("Current channel: %d", channel);
+    printf("Current channel: %d\n", channel);
 }
 
 /**
